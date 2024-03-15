@@ -58,7 +58,7 @@ jobs:
           bash build.sh
           cp "microsoft-edge-${VARIANT}-${VERSION}-x86_64.tar.xz" "microsoft-edge-${VARIANT}-x86_64.tar.xz"
           cp "microsoft-edge-${VARIANT}-${VERSION}-x86_64.AppImage" "microsoft-edge-${VARIANT}-x86_64.AppImage"
-          shasum -a 1 ./microsoft-edge-* > SHA1SUMS
+          shasum -a 1 microsoft-edge-* > SHA1SUMS
 
       - name: create release note
         if: env.trigger == 'true'
@@ -78,6 +78,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
         run: |
           gh release delete "${VARIANT}" --cleanup-tag --yes --repo "${{github.repository}}" || true
+          sleep 2 # wait for the tag to be deleted
           gh release create "${VARIANT}" --prerelease --notes-file note.md --title "${VARIANT} ${VERSION}" --repo "${{github.repository}}"
           gh release upload "${VARIANT}" ./microsoft-edge-* --clobber --repo "${{github.repository}}"
           gh release upload "${VARIANT}" ./SHA1SUMS --clobber --repo "${{github.repository}}"
@@ -90,6 +91,7 @@ jobs:
           VARIANT: ${{ matrix.variant }}
         run: |
           gh release delete "${VARIANT}" --cleanup-tag --yes --repo "${{github.repository}}" || true
+          sleep 2 # wait for the tag to be deleted
           gh release create "${VARIANT}" --notes-file note.md --title "${VARIANT} ${VERSION}" --repo "${{github.repository}}"
           gh release upload "${VARIANT}" ./microsoft-edge-* --clobber --repo "${{github.repository}}"
           gh release upload "${VARIANT}" ./SHA1SUMS --clobber --repo "${{github.repository}}"
