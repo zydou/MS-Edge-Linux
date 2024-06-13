@@ -41,6 +41,14 @@ jobs:
           echo "trigger=false" >> "$GITHUB_ENV"
           echo "Skip ${{matrix.variant}} $VERSION"
           fi
+          if [ -z $VERSION ]; then
+          echo "trigger=false" >> "$GITHUB_ENV"
+          echo "No version found"
+          fi
+          if [ -z $URL ]; then
+          echo "trigger=false" >> "$GITHUB_ENV"
+          echo "No URL found"
+          fi
 
       - name: checkout
         if: env.trigger == 'true'
