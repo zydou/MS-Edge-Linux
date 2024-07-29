@@ -31,7 +31,8 @@ jobs:
         run: |
           wget -q -O info.json 'https://edgeupdates.microsoft.com/api/products'
           VERSION=$(jq -r '.[] | select(.Product == "${{matrix.channel}}") | .Releases[] | select(.Platform == "Linux" and .Architecture == "x64") | .ProductVersion' info.json)
-          URL=$(jq -r '.[] | select(.Product == "${{matrix.channel}}") | .Releases[] | select(.Platform == "Linux" and .Architecture == "x64") | .Artifacts[] | select(.ArtifactName == "deb") | .Location' info.json)
+          # URL=$(jq -r '.[] | select(.Product == "${{matrix.channel}}") | .Releases[] | select(.Platform == "Linux" and .Architecture == "x64") | .Artifacts[] | select(.ArtifactName == "deb") | .Location' info.json)
+          URL="https://packages.microsoft.com/repos/edge/pool/main/m/microsoft-edge-${{matrix.variant}}/microsoft-edge-${{matrix.variant}}_${VERSION}-1_amd64.deb"
           echo "version=$VERSION" >> "$GITHUB_ENV"
           echo "url=$URL" >> "$GITHUB_ENV"
           if ! wget --spider "https://github.com/${{github.repository}}/releases/download/${{matrix.variant}}/microsoft-edge-${{matrix.variant}}-${VERSION}-x86_64.AppImage" > /dev/null 2>&1; then
@@ -45,9 +46,9 @@ jobs:
           echo "trigger=false" >> "$GITHUB_ENV"
           echo "No version found"
           fi
-          if [ -z $URL ]; then
+          if ! wget --spider "${URL}" > /dev/null 2>&1; then
           echo "trigger=false" >> "$GITHUB_ENV"
-          echo "No URL found"
+          echo "URL not found"
           fi
 
       - name: checkout
