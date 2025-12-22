@@ -6,16 +6,17 @@ VARIANT=${VARIANT:-stable}  # "stable", "beta" or "dev"
 
 mkdir ./${VARIANT}
 cd ./${VARIANT}
-wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$(uname -m).AppImage -O appimagetool
+wget -q -O appimagetool https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-$(uname -m).AppImage
 chmod a+x ./appimagetool
 
-wget "${URL}"
+wget -q "${URL}"
 ar x ./*.deb
 tar xf ./data.tar.xz
 mkdir $APP.AppDir
 mv ./opt/microsoft/msedge*/* ./$APP.AppDir/
 mv ./usr/share/applications/*.desktop ./$APP.AppDir/
 sed -i "s#/usr/bin/microsoft-edge#microsoft-edge#g" ./$APP.AppDir/*.desktop
+sed -i "s#NoDisplay=true#X-NoDisplay=true#g" ./$APP.AppDir/*.desktop
 
 if [ "$VARIANT" = "stable" ]; then
     cp ./$APP.AppDir/*logo_128*.png ./$APP.AppDir/$APP.png
